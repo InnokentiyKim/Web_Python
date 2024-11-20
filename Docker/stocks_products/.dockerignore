@@ -1,3 +1,6 @@
 *.json
 tests/
 pytest.ini
+requests-examples.http
+.github/
+*.md
