@@ -10,13 +10,13 @@
 ## Алгоритм решения
 ### Последовательность действий:
 
-1. Перейти в консоли (bash, zsh, ...) в директорию 'stocks_products'   
+1. Перейти в консоли (bash, zsh, ...) в корневую директорию проекта 'stocks_products'   
 
 2. Собрать docker image путем ввода в консоли команды:  
 `docker image build . -t stocks-app:1.0`  
 3. Запустить docker контейнер из образа:  
 `docker run -d -p 8088:8088 stocks-app:1.0`  
-4. REST API сервиса 'stocks_products' доступен по адресу:  
+4. REST API сервис 'stocks_products' доступен по адресу:  
 `localhost:8088/api/v1/`  
 
 
