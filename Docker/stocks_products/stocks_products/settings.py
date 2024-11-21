@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'stocks_products.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / os.getenv('DB_NAME', 'db_sqlite3'),
+        'NAME': BASE_DIR / os.getenv('DB_NAME', 'stocks_db.sqlite3'),
     }
 }
 

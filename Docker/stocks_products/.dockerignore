@@ -4,3 +4,6 @@ pytest.ini
 requests-examples.http
 .github/
 *.md
+*.env
+env/
+venv/
