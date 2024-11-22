@@ -1,0 +1,6 @@
+.idea
+*.env
+.idea/
+.DS_Store
+venv/
+env/
