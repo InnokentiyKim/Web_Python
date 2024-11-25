@@ -7,9 +7,7 @@ services:
   postgres:
     image: postgres:alpine
     env_file:
-      - .env
-    volumes:
-      - .:/docker-entrypoint-initdb.d
+      - db.env
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -u inncent -d stocks_products"]
@@ -17,25 +15,27 @@ services:
       timeout: 30s
       retries: 5
       start_period: 30s
-    networks:
-      - backend
-
   
   nginx:
     image: nginx:latest
+    restart: unless-stopped
     networks:
+      - backend
+    depends_on:
       - backend
 
   backend:
     build: .
+    env_file:
+      - .env
     ports:
       - "8088:8000"
     networks:
       - backend
-    restart: always
+    restart: unless-stopped
     depends_on:
       - postgres
-      - nginx
+
     
 
 
