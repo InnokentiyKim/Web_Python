@@ -15,7 +15,7 @@ POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5431")
 DSN = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
 engine = create_engine(DSN)
-Session = sessionmaker(bind=engine)
+Session = sessionmaker(engine)
 
 atexit.register(engine.dispose)
 
