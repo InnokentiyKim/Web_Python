@@ -1,12 +1,34 @@
 import flask
+import flask_bcrypt
 from flask import jsonify, request
 from flask.views import MethodView
+from pydantic import ValidationError
 from sqlalchemy.exc import IntegrityError
 from models_new import Session, Adv, User
 
 
 app = flask.Flask("advs_app")
+bcrypt = flask_bcrypt.Bcrypt(app)
 
+
+def hash_password(password: str) -> str:
+    password_bytes = password.encode()
+    password_hashed_bytes = bcrypt.generate_password_hash(password_bytes)
+    password_hashed_string = password_hashed_bytes.decode()
+    return password_hashed_string
+
+
+def validate_json(json_data, schema_cls):
+    try:
+        schema_obj = schema_cls(**json_data)
+        json_data_validated = schema_obj.dict(exclude_unset=True)
+        return json_data_validated
+    except ValidationError as err:
+        errors = err.errors()
+        for error in errors:
+            error.pop("ctx", None)
+        raise HttpError(400, errors)
+        
 
 class HttpError(Exception):
     def __init__(self, status_code: int, err_message: str | dict):
