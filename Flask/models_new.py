@@ -38,6 +38,16 @@ class Adv(Base):
     owner: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete='CASCADE'))
     user: Mapped["User"] = relationship(back_populates="advs")
     
+    @property
+    def dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "description": self.description,
+            "created_at": self.created_at.isoformat(),
+            "owner_id": self.owner,
+        }
+    
     
 class User(Base):
     
@@ -49,6 +59,15 @@ class User(Base):
     password: Mapped[str] = mapped_column(String(80), nullable=False)
     registered_at: Mapped[datetime.datetime] = mapped_column(DateTime, server_default=func.now())
     advs: Mapped[List["Adv"]] = relationship(back_populates="user")
+    
+    @property
+    def dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "registered_at": self.registered_at.isoformat(),
+        }
 
 
 Base.metadata.create_all(bind=engine)
