@@ -1,5 +1,5 @@
 import flask
-from flask import request
+from flask import jsonify, request
 from flask.views import MethodView
 from sqlalchemy.exc import IntegrityError
 from models_new import Session, Adv, User
@@ -67,14 +67,33 @@ class AdvView(MethodView):
     
     def get(self, adv_id: int):
         adv = get_adv_by_id(adv_id)
-        
+        return jsonify(adv.dict)
     
     def post(self):
-        pass
+        adv = Adv(**request.json)
+        add_adv(adv)
+        return jsonify(adv.id_dict)
     
     def patch(self, adv_id: int):
-        pass
+        json_data = request.json
+        adv = get_adv_by_id(adv_id)
+        for key, value in json_data.items():
+            setattr(adv, key, value)
+        add_adv(adv)
+        return jsonify(adv.id_dict)
+        
     
     def delete(self, adv_id: int):
-        pass
+        adv = get_adv_by_id(adv_id)
+        request.session.delete(adv)
+        request.session.commit()
+        return jsonify({"status": "deleted"})
+    
+    
+adv_view = AdvView.as_view("advs")
+
+app.add_url_rule(rule="/adv/<int:adv_id", view_func=adv_view, methods=['GET', 'PATCH', 'DELETE'])
+app.add_url_rule(rule="/adv", view_func=adv_view, methods=['POST'])
+
+app.run()
     
