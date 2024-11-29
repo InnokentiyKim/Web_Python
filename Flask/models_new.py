@@ -55,7 +55,7 @@ class User(Base):
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
-    email: Mapped[str] = mapped_column(String(80))
+    email: Mapped[str] = mapped_column(String(80), nullable=True)
     password: Mapped[str] = mapped_column(String(80), nullable=False)
     registered_at: Mapped[datetime.datetime] = mapped_column(DateTime, server_default=func.now())
     advs: Mapped[List["Adv"]] = relationship(back_populates="user")

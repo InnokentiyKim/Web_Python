@@ -1,0 +1,26 @@
+
+POST http://127.0.0.1:5000/api/user
+Content-Type: application/json;
+
+{
+    "name": "user_3", 
+    "password": "12345678"
+}
+
+###
+
+GET http://127.0.0.1:5000/api/user/3
+
+###
+
+PATCH  http://127.0.0.1:5000/api/user/1
+Content-Type: application/json;
+
+{
+    "name": "user_1_new", 
+    "email": "user1@mail.ru"
+}
+
+###
+
+GET http://127.0.0.1:5000/api/user/3

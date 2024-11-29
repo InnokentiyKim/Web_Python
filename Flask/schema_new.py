@@ -14,7 +14,7 @@ class UpdateAdv(BaseModel):
 class BaseUser(BaseModel):
     password: str
     
-    @field_validator
+    @field_validator("password")
     @classmethod
     def check_password(cls, value: str):
         if len(value) < 8:
@@ -24,10 +24,12 @@ class BaseUser(BaseModel):
 
 class CreateUser(BaseUser):
     name: str
+    email: str | None = None
     password: str
     
     
 class UpdateUser(BaseUser):
     name: str | None = None
+    email: str | None = None
     password: str | None = None
         

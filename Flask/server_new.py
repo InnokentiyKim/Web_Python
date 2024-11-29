@@ -147,10 +147,10 @@ class UserView(MethodView):
 adv_view = AdvView.as_view("advs")
 user_view = UserView.as_view("users")
 
-app.add_url_rule(rule="/api/adv/<int:adv_id", view_func=adv_view, methods=['GET', 'PATCH', 'DELETE'])
+app.add_url_rule(rule="/api/adv/<int:adv_id>", view_func=adv_view, methods=['GET', 'PATCH', 'DELETE'])
 app.add_url_rule(rule="/api/adv", view_func=adv_view, methods=['POST'])
 
-app.add_url_rule(rule="/api/user/<int:user_id", view_func=user_view, methods=['GET', 'PATCH', 'DELETE'])
+app.add_url_rule(rule="/api/user/<int:user_id>", view_func=user_view, methods=['GET', 'PATCH', 'DELETE'])
 app.add_url_rule(rule="/api/user", view_func=user_view, methods=['POST'])
 
 app.run()
