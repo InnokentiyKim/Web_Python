@@ -4,6 +4,7 @@ from pydantic import BaseModel, field_validator
 class CreateAdv(BaseModel):
     title: str
     description: str
+    owner: int
 
 
 class UpdateAdv(BaseModel):

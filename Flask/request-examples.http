@@ -9,7 +9,7 @@ Content-Type: application/json;
 
 ###
 
-GET http://127.0.0.1:5000/api/user/3
+GET http://127.0.0.1:5000/api/user/1
 
 ###
 
@@ -23,4 +23,34 @@ Content-Type: application/json;
 
 ###
 
-GET http://127.0.0.1:5000/api/user/3
+DELETE http://127.0.0.1:5000/api/user/3
+
+
+###
+
+POST http://127.0.0.1:5000/api/adv
+Content-Type: application/json;
+
+{
+    "title": "my first adv", 
+    "description": "Simple description for my first adv",
+    "owner": 1
+}
+
+###
+
+GET http://127.0.0.1:5000/api/adv/2
+
+###
+
+PATCH  http://127.0.0.1:5000/api/adv/2
+Content-Type: application/json;
+
+{
+    "title": "first adv title changed", 
+    "description": "Simple description changed"
+}
+
+###
+
+DELETE http://127.0.0.1:5000/api/adv/2

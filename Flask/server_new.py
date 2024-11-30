@@ -6,6 +6,7 @@ from pydantic import ValidationError
 from sqlalchemy.exc import IntegrityError
 from models_new import Session, Adv, User
 from schema_new import CreateAdv, CreateUser, UpdateAdv, UpdateUser
+from flask_httpauth import HTTPBasicAuth
 
 
 app = flask.Flask("advs_app")
