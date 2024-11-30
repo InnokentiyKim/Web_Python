@@ -1,8 +1,9 @@
 import flask
 import flask_bcrypt
-from flask import jsonify, request
+from flask import g, jsonify, request
 from flask.views import MethodView
 from pydantic import ValidationError
+from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from models_new import Session, Adv, User
 from schema_new import CreateAdv, CreateUser, UpdateAdv, UpdateUser
@@ -11,6 +12,7 @@ from flask_httpauth import HTTPBasicAuth
 
 app = flask.Flask("advs_app")
 bcrypt = flask_bcrypt.Bcrypt(app)
+auth = HTTPBasicAuth()
 
 
 def hash_password(password: str) -> str:
@@ -18,6 +20,15 @@ def hash_password(password: str) -> str:
     password_hashed_bytes = bcrypt.generate_password_hash(password_bytes)
     password_hashed_string = password_hashed_bytes.decode()
     return password_hashed_string
+
+@auth.verify_password
+def verify_password(username, password):
+    query = select(User).filter_by(name = username)
+    user = request.session.execute(query).scalars().first()
+    if not user or (hash_password(password) != user.password):
+        return False
+    g.user = user
+    return True
 
 
 def validate_json(json_data, schema_cls):
@@ -92,13 +103,15 @@ class AdvView(MethodView):
     def get(self, adv_id: int):
         adv = get_adv_by_id(adv_id)
         return jsonify(adv.dict)
-    
+   
+    @auth.login_required
     def post(self):
         json_data = validate_json(request.json, CreateAdv)
         adv = Adv(**json_data)
         add_adv(adv)
         return jsonify(adv.id_dict)
     
+    @auth.login_required
     def patch(self, adv_id: int):
         json_data = validate_json(request.json, UpdateAdv)
         adv = get_adv_by_id(adv_id)
@@ -107,7 +120,7 @@ class AdvView(MethodView):
         add_adv(adv)
         return jsonify(adv.id_dict)
         
-    
+    @auth.login_required
     def delete(self, adv_id: int):
         adv = get_adv_by_id(adv_id)
         request.session.delete(adv)
@@ -128,6 +141,7 @@ class UserView(MethodView):
         add_user(user)
         return jsonify(user.id_dict)
     
+    @auth.login_required
     def patch(self, user_id: int):
         json_data = validate_json(request.json, UpdateUser)
         if "password" in json_data:
@@ -138,6 +152,7 @@ class UserView(MethodView):
         add_user(user)
         return jsonify(user.id_dict)
     
+    @auth.login_required
     def delete(self, user_id: int):
         user = get_user_by_id(user_id)
         request.session.delete(user)

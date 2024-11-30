@@ -3,7 +3,7 @@ POST http://127.0.0.1:5000/api/user
 Content-Type: application/json;
 
 {
-    "name": "user_3", 
+    "name": "user_1", 
     "password": "12345678"
 }
 
@@ -30,6 +30,7 @@ DELETE http://127.0.0.1:5000/api/user/3
 
 POST http://127.0.0.1:5000/api/adv
 Content-Type: application/json;
+Authorization: Basic user1:12345678
 
 {
     "title": "my first adv", 
@@ -39,7 +40,7 @@ Content-Type: application/json;
 
 ###
 
-GET http://127.0.0.1:5000/api/adv/2
+GET http://127.0.0.1:5000/api/adv/1
 
 ###
 
