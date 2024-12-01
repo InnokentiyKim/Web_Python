@@ -30,17 +30,16 @@ DELETE http://127.0.0.1:5000/api/user/3
 
 POST http://127.0.0.1:5000/api/adv
 Content-Type: application/json;
-Authorization: Basic user1:12345678
+Authorization: Basic user_1:12345678
 
 {
-    "title": "my first adv", 
-    "description": "Simple description for my first adv",
-    "owner": 1
+    "title": "my first adv new", 
+    "description": "Simple description for my first adv"
 }
 
 ###
 
-GET http://127.0.0.1:5000/api/adv/1
+GET http://127.0.0.1:5000/api/adv
 
 ###
 

@@ -21,11 +21,12 @@ def hash_password(password: str) -> str:
     password_hashed_string = password_hashed_bytes.decode()
     return password_hashed_string
 
+
 @auth.verify_password
-def verify_password(username, password):
-    query = select(User).filter_by(name = username)
+def verify_pwd(username: str, password: str) -> bool:
+    query = select(User).filter_by(name=username)
     user = request.session.execute(query).scalars().first()
-    if not user or (hash_password(password) != user.password):
+    if user is None or not bcrypt.check_password_hash(user.password, password):
         return False
     g.user = user
     return True
@@ -127,9 +128,15 @@ class AdvView(MethodView):
         request.session.commit()
         return jsonify({"status": "deleted"})
     
+
+class AdvListView(MethodView):
+    
+    def get(self):
+        advs = request.session.scalars(select(Adv)).all()
+        return jsonify([adv.dict for adv in advs])
     
 class UserView(MethodView):
-    
+
     def get(self, user_id: int):
         user = get_user_by_id(user_id)
         return jsonify(user.dict)
@@ -162,6 +169,9 @@ class UserView(MethodView):
     
 adv_view = AdvView.as_view("advs")
 user_view = UserView.as_view("users")
+advs_list_view = AdvListView.as_view("advs_list")
+
+app.add_url_rule(rule="/api/adv", view_func=advs_list_view, methods=['GET'])
 
 app.add_url_rule(rule="/api/adv/<int:adv_id>", view_func=adv_view, methods=['GET', 'PATCH', 'DELETE'])
 app.add_url_rule(rule="/api/adv", view_func=adv_view, methods=['POST'])
