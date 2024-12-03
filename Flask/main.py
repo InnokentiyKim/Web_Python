@@ -131,6 +131,8 @@ class AdvView(MethodView):
     @auth.login_required
     def delete(self, adv_id: int):
         adv = get_adv_by_id(adv_id)
+        if g.user.id != adv.owner:
+            raise HttpError(status_code=403, err_message="Forbidden")
         request.session.delete(adv)
         request.session.commit()
         return jsonify({"status": "deleted"})
