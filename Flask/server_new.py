@@ -109,17 +109,24 @@ class AdvView(MethodView):
     def post(self):
         json_data = validate_json(request.json, CreateAdv)
         adv = Adv(**json_data)
+        adv.owner = g.user.id
         add_adv(adv)
         return jsonify(adv.id_dict)
     
+
     @auth.login_required
-    def patch(self, adv_id: int):
+    def patch(self, adv_id: int) -> flask.Response:
         json_data = validate_json(request.json, UpdateAdv)
         adv = get_adv_by_id(adv_id)
+        if "owner" in json_data:
+            raise HttpError(status_code=400, err_message="Owner field can't be changed")
+        if g.user.id != adv.owner:
+            raise HttpError(status_code=403, err_message="Forbidden")
         for key, value in json_data.items():
             setattr(adv, key, value)
         add_adv(adv)
         return jsonify(adv.id_dict)
+
         
     @auth.login_required
     def delete(self, adv_id: int):
