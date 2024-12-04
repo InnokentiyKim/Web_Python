@@ -1,23 +1,7 @@
-import os
-import atexit
 import datetime
 from typing import List
-from sqlalchemy import create_engine, Integer, String, DateTime, func, ForeignKey
-from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column, relationship
-
-
-POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "postgres")
-POSTGRES_DB = os.getenv("POSTGRES_DB", "postgres_db")
-POSTGRES_HOST = os.getenv("POSTGRES_HOST", "127.0.0.1")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
-
-DSN = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
-
-engine = create_engine(DSN)
-Session = sessionmaker(bind=engine)
-
-atexit.register(engine.dispose)
+from sqlalchemy import Integer, String, DateTime, func, ForeignKey
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
@@ -70,5 +54,4 @@ class User(Base):
         }
 
 
-Base.metadata.create_all(bind=engine)
     

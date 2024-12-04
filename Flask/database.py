@@ -1,8 +1,26 @@
+import atexit
+import os
 from flask import request
 from sqlalchemy.exc import IntegrityError
-from models import Adv, User
+from models import Adv, Base, User
 from utils.http_error import HttpError
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
+
+POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "postgres")
+POSTGRES_DB = os.getenv("POSTGRES_DB", "postgres_db")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "127.0.0.1")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
+
+DSN = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+
+engine = create_engine(DSN)
+Session = sessionmaker(bind=engine)
+
+atexit.register(engine.dispose)
+Base.metadata.create_all(bind=engine)
 
 def get_adv_by_id(adv_id: int):
     adv = request.session.get(Adv, adv_id)
