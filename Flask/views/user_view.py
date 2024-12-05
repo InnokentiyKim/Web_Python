@@ -1,9 +1,10 @@
 from flask.views import MethodView
-from flask import request, jsonify
+from flask import g, request, jsonify
 from models import User
 from schema import CreateUser, UpdateUser
+from utils.http_error import HttpError
 from utils.validation import validate_json
-from utils.verification import hash_password
+from utils.verification import hash_password, is_owner_or_raise_error
 from database import get_user_by_id, add_user
 from app_base import auth
 
@@ -23,6 +24,7 @@ class UserView(MethodView):
     
     @auth.login_required
     def patch(self, user_id: int):
+        is_owner_or_raise_error(user_id=g.user.id, owner_id=user_id)
         json_data = validate_json(request.json, UpdateUser)
         if "password" in json_data:
             json_data["password"] = hash_password(json_data["password"])
@@ -35,6 +37,7 @@ class UserView(MethodView):
     @auth.login_required
     def delete(self, user_id: int):
         user = get_user_by_id(user_id)
+        is_owner_or_raise_error(user_id=g.user.id, owner_id=user.id)
         request.session.delete(user)
         request.session.commit()
         return jsonify({"status": "deleted"})

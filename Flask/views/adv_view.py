@@ -6,9 +6,9 @@ from models import Adv
 from utils.http_error import HttpError
 from utils.validation import validate_json
 from schema import CreateAdv, UpdateAdv
-from models import Adv
 from sqlalchemy import select
 from app_base import auth
+from utils.verification import is_owner_or_raise_error
 
 
 class AdvView(MethodView):
@@ -30,10 +30,9 @@ class AdvView(MethodView):
     def patch(self, adv_id: int) -> flask.Response:
         json_data = validate_json(request.json, UpdateAdv)
         adv = get_adv_by_id(adv_id)
+        is_owner_or_raise_error(user_id=g.user.id, owner_id=adv.owner)
         if "owner" in json_data:
             raise HttpError(status_code=400, err_message="Owner field can't be changed")
-        if g.user.id != adv.owner:
-            raise HttpError(status_code=403, err_message="Forbidden")
         for key, value in json_data.items():
             setattr(adv, key, value)
         add_adv(adv)
@@ -43,8 +42,7 @@ class AdvView(MethodView):
     @auth.login_required
     def delete(self, adv_id: int):
         adv = get_adv_by_id(adv_id)
-        if g.user.id != adv.owner:
-            raise HttpError(status_code=403, err_message="Forbidden")
+        is_owner_or_raise_error(user_id=g.user.id, owner_id=adv.owner)
         request.session.delete(adv)
         request.session.commit()
         return jsonify({"status": "deleted"})
