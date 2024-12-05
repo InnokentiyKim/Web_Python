@@ -37,7 +37,6 @@ class UserView(MethodView):
     @auth.login_required
     def delete(self, user_id: int):
         user = get_user_by_id(user_id)
-        is_owner_or_raise_error(user_id=g.user.id, owner_id=user.id)
         request.session.delete(user)
         request.session.commit()
         return jsonify({"status": "deleted"})

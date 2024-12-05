@@ -3,7 +3,7 @@ POST http://127.0.0.1:5000/api/user
 Content-Type: application/json;
 
 {
-    "name": "user_2", 
+    "name": "user_1", 
     "password": "12345678"
 }
 
@@ -15,16 +15,16 @@ GET http://127.0.0.1:5000/api/user/1
 
 PATCH  http://127.0.0.1:5000/api/user/1
 Content-Type: application/json;
+Authorization: Basic user_1:12345678
 
 {
-    "name": "user_1_new", 
     "email": "user1@mail.ru"
 }
 
 ###
 
-DELETE http://127.0.0.1:5000/api/user/3
-
+DELETE http://127.0.0.1:5000/api/user/5
+Authorization: Basic user_1:12345678
 
 ###
 
@@ -43,8 +43,9 @@ GET http://127.0.0.1:5000/api/adv
 
 ###
 
-PATCH  http://127.0.0.1:5000/api/adv/2
+PATCH  http://127.0.0.1:5000/api/adv/1
 Content-Type: application/json;
+Authorization: Basic user_1:12345678
 
 {
     "title": "first adv title changed", 
@@ -53,4 +54,5 @@ Content-Type: application/json;
 
 ###
 
-DELETE http://127.0.0.1:5000/api/adv/2
+DELETE http://127.0.0.1:5000/api/adv/24
+Authorization: Basic user_1:12345678

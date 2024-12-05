@@ -53,3 +53,4 @@ class AdvListView(MethodView):
     def get(self):
         advs = request.session.scalars(select(Adv)).all()
         return jsonify([adv.dict for adv in advs])
+    
