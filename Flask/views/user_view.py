@@ -2,7 +2,6 @@ from flask.views import MethodView
 from flask import g, request, jsonify
 from models import User
 from schema import CreateUser, UpdateUser
-from utils.http_error import HttpError
 from utils.validation import validate_json
 from utils.verification import hash_password, is_owner_or_raise_error
 from database import get_user_by_id, add_user
