@@ -1,6 +1,8 @@
 import datetime
 import asyncio
 import aiohttp
+import more_itertools
+from models import SwapiPeople, Session, init_orm, close_orm
 
 
 MAX_COROS = 10
@@ -12,15 +14,24 @@ async def get_people(person_id: int, http_session):
     return json_data
 
 
+async def insert_people(json_list: list[dict] | tuple[dict]):
+    async with Session() as session:
+        swapi_people_list = [SwapiPeople(**item) for item in json_list]
+        session.add_all(swapi_people_list)
+        await session.commit()
 
 
 async def main():
+    await init_orm()
     async with aiohttp.ClientSession() as http_session:
-        coro_1 = get_people(1, http_session)
-        coro_2 = get_people(2, http_session)
-        coro_3 = get_people(3, http_session)
-        result = await asyncio.gather(coro_1, coro_2, coro_3)
-    print(result)
+        for i_list in more_itertools.chunked(range(1, 101), MAX_COROS):
+            coros = [get_people(i, http_session) for i in i_list]
+            result = await asyncio.gather(*coros)
+            task = asyncio.create_task(insert_people(result))
+        tasks = asyncio.all_tasks()
+        tasks.remove(asyncio.current_task())
+        await asyncio.gather(*tasks)
+    await close_orm()
 
 
 start = datetime.datetime.now()

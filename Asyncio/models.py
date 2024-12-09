@@ -1,7 +1,7 @@
 import os
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import Integer, JSON
+from sqlalchemy import Integer, String
 
 POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD', 'secret')
 POSTGRES_USER = os.getenv('POSTGRES_USER', 'swapi')
@@ -18,10 +18,22 @@ class Base(DeclarativeBase, AsyncAttrs):
     pass
 
 class SwapiPeople(Base):
-    __tablename__ = 'swapi'
+    __tablename__ = 'swapi_people'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    json: Mapped[dict] = mapped_column(JSON)
+    birth_year: Mapped[int] = mapped_column(Integer)
+    eye_color: Mapped[str] = mapped_column(String)
+    films: Mapped[str] = mapped_column(String)
+    gender: Mapped[str] = mapped_column(String)
+    hair_color: Mapped[str] = mapped_column(String)
+    height: Mapped[int] = mapped_column(Integer)
+    homeworld: Mapped[str] = mapped_column(String)
+    mass: Mapped[str] = mapped_column(String)
+    name: Mapped[str] = mapped_column(String)
+    skin_color: Mapped[str] = mapped_column(String)
+    species: Mapped[str] = mapped_column(String)
+    starships: Mapped[str] = mapped_column(String)
+    vehicles: Mapped[str] = mapped_column(String)
 
 
 async def init_orm():
@@ -31,6 +43,11 @@ async def init_orm():
 
 async def close_orm():
     await engine.dispose()
+
+
+
+
+
 
 
 
