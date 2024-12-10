@@ -8,6 +8,22 @@ from schema import SwapiPeopleSchema, validate_json
 
 MAX_COROS = 10
 
+PARAMS_LIST = [
+    'name',
+    'birth_year',
+    'eye_color',
+    'films',
+    'gender',
+    'hair_color',
+    'height',
+    'mass',
+    'skin_color',
+    'homeworld',
+    'species',
+    'starships',
+    'vehicles',
+]
+
 EXTRA_PARAMS = [
     'films',
     'homeworld',
@@ -16,11 +32,12 @@ EXTRA_PARAMS = [
     'vehicles',
 ]
 
-async def get_people_count(http_session):
+async def get_people_count(http_session) -> int:
     url = f"http://swapi.py4e.com/api/people/"
     http_response = await http_session.get(url)
     json_data = await http_response.json()
-    return json_data.get("count", 0)
+    people_count = json_data.get('count', 0)
+    return int(people_count)
 
 
 async def get_param_from_links(http_session: Session, links_list: list[str], param: str) -> str:
@@ -33,16 +50,17 @@ async def get_param_from_links(http_session: Session, links_list: list[str], par
     return ", ".join(param_str_list)
 
 
-async def get_people(person_id: int, http_session, extra_params: list[str]):
+async def get_people(person_id: int, http_session, extra_params: list[str]=None):
     url = f"http://swapi.py4e.com/api/people/{person_id}/"
     http_response = await http_session.get(url)
     json_data = await http_response.json()
-    extra_params_dict = {}
-    for param in extra_params:
-        links_list = json_data.get(param, [])
-        extra_params_dict[param] = await get_param_from_links(http_session, links_list, param)
-        json_data[param] = extra_params_dict[param]
     validated_data = validate_json(json_data, SwapiPeopleSchema)
+    # extra_params_dict = {}
+    # for param in extra_params:
+    #     links_list = json_data.get(param, [])
+    #     extra_params_dict[param] = await get_param_from_links(http_session, links_list, param)
+    #     json_data[param] = extra_params_dict[param]
+    # validated_data = validate_json(json_data, SwapiPeopleSchema)
     return validated_data
 
 
@@ -58,7 +76,7 @@ async def main():
     async with aiohttp.ClientSession() as http_session:
         amount = await get_people_count(http_session)
         for i_list in more_itertools.chunked(range(1, amount), MAX_COROS):
-            coros = [get_people(i, http_session, EXTRA_PARAMS) for i in i_list]
+            coros = [get_people(i, http_session) for i in i_list]
             result = await asyncio.gather(*coros)
             task = asyncio.create_task(insert_people(result))
         tasks = asyncio.all_tasks()
