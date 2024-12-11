@@ -1,20 +1,21 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing import Optional
 
 
 class SwapiPeopleSchema(BaseModel):
     name: str
-    birth_year: str | None = ""
-    eye_color: str | None = ""
-    gender: str | None = ""
-    hair_color: str | None = ""
-    height: str | int | None = ""
-    mass: str | int | None = ""
-    skin_color: str | None = ""
-    films: str | list[str] | None = ""
-    homeworld: str = ""
-    species: str | list[str] = ""
-    starships: str | list[str] = ""
-    vehicles: str | list[str] = ""
+    birth_year: str | None = Field(default="")
+    eye_color: str | None = Field(default="")
+    gender: str | None = Field(default="")
+    hair_color: str | None = Field(default="")
+    height: str | int | None = Field(default="")
+    mass: str | int | None = Field(default="")
+    skin_color: str | None = Field(default="")
+    films: Optional[str] | list | list[str] | list | None = Field(default="")
+    homeworld: Optional[str] | None = Field(default="")
+    species: Optional[str] | list | list[str] | None = Field(default="")
+    starships: Optional[str] | list | list[str] | None = Field(default="")
+    vehicles: Optional[str] | list | list[str] | None = Field(default="")
 
 
 def validate_json(json_data, schema_cls):
