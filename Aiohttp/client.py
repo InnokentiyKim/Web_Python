@@ -5,10 +5,8 @@ import asyncio
 async def main():
     session = aiohttp.ClientSession()
 
-    response = await session.post(
-        "http://127.0.0.1:8080/hello/world/42?k=1&v=2",
-        json={"name": "Inncent"},
-        headers={"token": "xxxxxxxxx"},
+    response = await session.get(
+        "http://127.0.0.1:8080/user/1"
     )
     print(response.status)
     print(await response.text())

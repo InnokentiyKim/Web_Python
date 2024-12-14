@@ -33,6 +33,14 @@ class User(Base):
     password: Mapped[str] = mapped_column(String, nullable=False)
     registered_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
 
+    @property
+    def dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "registered_at": self.registered_at.isoformat(),
+        }
+
 
 async def init_orm():
     async with engine.begin() as conn:
