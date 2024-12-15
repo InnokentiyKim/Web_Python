@@ -1,15 +1,15 @@
 import os
 from datetime import datetime
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncAttrs
+
+from sqlalchemy import DateTime, Integer, String, func
+from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, Integer, DateTime, func
 
-
-POSTGRES_USER = os.getenv('POSTGRES_USER', 'app')
-POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD', 'secret')
-POSTGRES_DB = os.getenv('POSTGRES_DB', 'app')
-POSTGRES_HOST = os.getenv('POSTGRES_HOST', 'localhost')
-POSTGRES_PORT = os.getenv('POSTGRES_PORT', '5431')
+POSTGRES_USER = os.getenv("POSTGRES_USER", "app")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "secret")
+POSTGRES_DB = os.getenv("POSTGRES_DB", "app")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5431")
 
 
 DSN = f"postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
@@ -26,7 +26,7 @@ class Base(DeclarativeBase, AsyncAttrs):
 
 
 class User(Base):
-    __tablename__ = 'app_users'
+    __tablename__ = "app_users"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
