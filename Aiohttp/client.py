@@ -9,7 +9,7 @@ async def main():
     # response = await session.post(
     #     "http://127.0.0.1:8080/user",
     #     json={
-    #         "name": "user_2",
+    #         "name": "user_1",
     #         "password": "1234"
     #     }
     # )
