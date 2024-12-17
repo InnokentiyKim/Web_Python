@@ -1,5 +1,5 @@
 import os
-from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 
 POSTGRES_USER = os.getenv("POSTGRES_USER", "app")

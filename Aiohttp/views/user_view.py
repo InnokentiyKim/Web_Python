@@ -21,6 +21,7 @@ class UserView(web.View):
         await add_user(self.request.session, user)
         return web.json_response(user.id_dict)
 
+
     async def patch(self):
         json_data = await self.request.json()
         validated_data = validate(json_data)
