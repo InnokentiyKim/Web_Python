@@ -1,9 +1,10 @@
-from aiohttp.web import HTTPNotFound, HTTPConflict
+from aiohttp.web import HTTPConflict, HTTPNotFound
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from utils.errors import generate_error
-from models.user import User
+
 from models.adv import Adv
+from models.user import User
+from utils.errors import generate_error
 
 
 async def get_user_by_id(session: AsyncSession, user_id: int):
@@ -11,6 +12,7 @@ async def get_user_by_id(session: AsyncSession, user_id: int):
     if user is None:
         raise generate_error(HTTPNotFound, "user not found")
     return user
+
 
 async def add_user(session: AsyncSession, user: User):
     session.add(user)
@@ -26,6 +28,7 @@ async def get_adv_by_id(session: AsyncSession, adv_id: int):
     if adv is None:
         raise generate_error(HTTPNotFound, "advertisement not found")
     return adv
+
 
 async def add_adv(session: AsyncSession, adv: Adv):
     session.add(adv)

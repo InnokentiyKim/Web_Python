@@ -1,6 +1,7 @@
-from database.settings import engine
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import DeclarativeBase
+
+from database.settings import engine
 
 
 class Base(DeclarativeBase, AsyncAttrs):

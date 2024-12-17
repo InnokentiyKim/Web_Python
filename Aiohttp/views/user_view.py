@@ -1,6 +1,7 @@
-from models.user import User
 from aiohttp import web
-from database.functions import get_user_by_id, add_user
+
+from database.functions import add_user, get_user_by_id
+from models.user import User
 from schemas.user_schema import CreateUser, UpdateUser
 from utils.validation import validate
 
@@ -9,7 +10,7 @@ class UserView(web.View):
 
     @property
     def user_id(self):
-        return int(self.request.match_info['user_id'])
+        return int(self.request.match_info["user_id"])
 
     async def get(self):
         user = await get_user_by_id(self.request.session, self.user_id)

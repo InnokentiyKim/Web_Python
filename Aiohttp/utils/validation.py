@@ -1,6 +1,7 @@
-from pydantic import ValidationError
-from errors import generate_error
 from aiohttp.web import HTTPBadRequest
+from pydantic import ValidationError
+
+from utils.errors import generate_error
 
 
 def validate(json_data, schema_cls):

@@ -1,15 +1,16 @@
 from aiohttp import web
+
+from database.functions import add_adv, get_adv_by_id
 from models.adv import Adv
-from schemas.adv_schema import UpdateAdv
+from schemas.adv_schema import CreateAdv, UpdateAdv
 from utils.validation import validate
-from database.functions import get_adv_by_id, add_adv
 
 
 class AdvView(web.View):
 
     @property
     def adv_id(self):
-        return int(self.request.match_info['adv_id'])
+        return int(self.request.match_info["adv_id"])
 
     async def get(self):
         adv = await get_adv_by_id(self.request.session, self.adv_id)
@@ -17,7 +18,7 @@ class AdvView(web.View):
 
     async def post(self):
         json_data = await self.request.json()
-        validated_data = validate(json_data, UpdateAdv)
+        validated_data = validate(json_data, CreateAdv)
         adv = Adv(**validated_data)
         await add_adv(self.request.session, adv)
         return web.json_response(adv.id_dict)

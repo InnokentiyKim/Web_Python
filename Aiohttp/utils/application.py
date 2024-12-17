@@ -1,6 +1,7 @@
-from database.settings import Session
-from models.base import init_orm, close_orm
 from aiohttp import web
+
+from database.settings import Session
+from models.base import close_orm, init_orm
 
 
 async def orm_context(app: web.Application):

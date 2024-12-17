@@ -8,7 +8,7 @@ class BaseUser(BaseModel):
     @classmethod
     def check_password_length(cls, value):
         if len(value) < 8:
-            raise ValueError('Password must be at least 8 characters')
+            raise ValueError("Password must be at least 8 characters")
         return value
 
 
