@@ -28,17 +28,12 @@
 
 ## Документация по проекту
 
-Проект запускать через `server.py`
+
+Проект запускается с помощью docker, используя файл `docker-compose.yml`
+(`хост: db`, `порт: 5432`) - команда `docker-compose up`
+
 Проверить работу сервиса можно через `client.py`
 
-Установить зависимости:
-
-```bash
-pip install -r requirements.txt
-```
-
-Необходимо "поднять" сервисы в docker, используя файл `docker-compose.yml`
-(`порт: 5431`, `хост: db`) - команда `docker-compose up`
 
 
 Переменные окружения:
@@ -47,6 +42,6 @@ pip install -r requirements.txt
 - POSTGRES_USER
 - POSTGRES_PASSWORD
 - POSTGRES_DB
-- POSTGRES_HOST
-- POSTGRES_PORT
+- POSTGRES_HOST (db)
+- POSTGRES_PORT (5432)
 ```
