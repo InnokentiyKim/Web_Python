@@ -22,8 +22,8 @@ async def get_todo(session: SessionDependency, todo_id: int):
 async def create_todo():
     pass
 
-async def update_todo():
-    pass
+async def update_todo(session: SessionDependency, todo_id: int):
+    todo_item = await crud.get_item_by_id(session, Todo, todo_id)
 
-async def delete_todo():
-    pass
+async def delete_todo(session: SessionDependency, todo_id: int):
+    todo_item = await crud.get_item_by_id(session, Todo, todo_id)
