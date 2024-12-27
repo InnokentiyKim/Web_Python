@@ -27,6 +27,14 @@ class User(Base):
     registered_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     advs: Mapped[List["Adv"]] = relationship("Adv", lazy='joined', back_populates="user")
 
+    @property
+    def dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "registered_at": self.registered_at.isoformat()
+        }
+
 
 class Adv(Base):
     __tablename__ = 'adv'

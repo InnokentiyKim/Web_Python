@@ -6,6 +6,37 @@ from typing import Literal
 class IdResponseBase(BaseModel):
     id: int
 
+class StatusResponse(BaseModel):
+    status: Literal['deleted']
+
+
+class GetUserResponse(BaseModel):
+    id: int
+    name: str
+    registered_at: datetime
+
+
+class CreateUserRequest(BaseModel):
+    name: str
+    password: str
+
+
+class CreateUserResponse(IdResponseBase):
+    pass
+
+
+class UpdateUserRequest(BaseModel):
+    name: str | None = None
+    password: str | None = None
+
+
+class UpdateUserResponse(IdResponseBase):
+    pass
+
+
+class DeleteUserResponse(StatusResponse):
+    pass
+
 
 class GetAdvResponse(BaseModel):
     id: int
@@ -36,9 +67,6 @@ class UpdateAdvRequest(BaseModel):
 class UpdateAdvResponse(IdResponseBase):
     pass
 
-
-class StatusResponse(BaseModel):
-    status: Literal['deleted']
 
 class DeleteAdvResponse(StatusResponse):
     pass
