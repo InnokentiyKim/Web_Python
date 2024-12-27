@@ -1,4 +1,4 @@
-from config import DSN
+from config_new import DSN
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncAttrs, create_async_engine, async_sessionmaker
 from sqlalchemy import String, Integer, Boolean, DateTime, func
@@ -8,6 +8,7 @@ from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
 engine = create_async_engine(DSN)
 
 Session = async_sessionmaker(bind=engine, expire_on_commit=False)
+
 
 class Base(AsyncAttrs, DeclarativeBase):
 
@@ -42,8 +43,10 @@ class Todo(Base):
             "end_time": self.end_time.isoformat(),
         }
 
+
 ORM_OBJ = Todo
 ORM_CLS = type[Todo]
+
 
 async def init_orm():
     async with engine.begin() as conn:

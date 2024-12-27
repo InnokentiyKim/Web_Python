@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from models import ORM_OBJ, ORM_CLS
+from models_new import ORM_OBJ, ORM_CLS
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
 

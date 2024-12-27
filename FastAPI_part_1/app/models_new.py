@@ -1,8 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncAttrs,create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import String, Integer, DECIMAL, DateTime, func, ForeignKey
-from config import DSN
+from config_new import DSN
 from datetime import datetime
+from typing import List
 
 
 engine = create_async_engine(DSN)
@@ -20,7 +21,11 @@ class Base(AsyncAttrs, DeclarativeBase):
 class User(Base):
     __tablename__ = 'user'
 
-
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(60), unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(String(60), nullable=False)
+    registered_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    advs: Mapped[List["Adv"]] = relationship("Adv", lazy='joined', back_populates="user")
 
 
 class Adv(Base):
@@ -30,8 +35,9 @@ class Adv(Base):
     title: Mapped[str] = mapped_column(String(80), nullable=False, Index=True)
     description: Mapped[str] = mapped_column(String(255), nullable=False)
     price: Mapped[float] = mapped_column(DECIMAL, nullable=False)
-    author: Mapped[int] = mapped_column(ForeignKey("User", ondelete='CASCADE'))
+    author: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete='CASCADE'))
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    user: Mapped["User"] = relationship("User", lazy='joined', back_populates='advs')
 
     @property
     def dict(self):
@@ -43,3 +49,7 @@ class Adv(Base):
             "author": self.author,
             "created_at": self.created_at.isoformat()
         }
+
+
+ORM_OBJ = Adv | User
+ORM_CLS = type[Adv] | type[User]
