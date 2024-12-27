@@ -1,11 +1,10 @@
 from fastapi import FastAPI
-
-import crud_new
+import crud
 from constants import STATUS_DELETED
-from crud_new import add_item, get_item_by_id
-from lifespan_new import lifespan
-from dependency_new import SessionDependency
-from models_new import User, Adv
+from crud import add_item, get_item_by_id
+from lifespan import lifespan
+from dependency import SessionDependency
+from models import User, Adv
 from schema import (GetAdvResponse, CreateAdvRequest, CreateAdvResponse, UpdateAdvRequest,
                     UpdateAdvResponse, DeleteAdvResponse, GetUserResponse, CreateUserRequest,
                     CreateUserResponse, UpdateUserRequest, UpdateUserResponse, DeleteUserResponse)
@@ -20,7 +19,7 @@ app = FastAPI(
 
 @app.get("/api/v1/user/{user_id}", response_model=GetUserResponse, tags=['users'])
 async def get_user(session: SessionDependency, user_id: int):
-    user = crud_new.get_item_by_id(session, User, user_id)
+    user = crud.get_item_by_id(session, User, user_id)
     return user.dict
 
 
@@ -44,13 +43,13 @@ async def update_user(session: SessionDependency, user_request: UpdateUserReques
 @app.delete("/api/v1/user/{user_id}", response_model=DeleteUserResponse, tags=['users'])
 async def delete_user(session: SessionDependency, user_id: int):
     user = await get_item_by_id(session, User, user_id)
-    await crud_new.delete_item(session, user)
+    await crud.delete_item(session, user)
     return STATUS_DELETED
 
 
 @app.get("/api/v1/advertisement/{advertisement_id}", response_model=GetAdvResponse, tags=['advertisements'])
 async def get_adv(session: SessionDependency, adv_id: int):
-    adv = crud_new.get_item_by_id(session, Adv, adv_id)
+    adv = crud.get_item_by_id(session, Adv, adv_id)
     return adv.dict
 
 
@@ -68,12 +67,12 @@ async def update_adv(session: SessionDependency, adv_id: int, adv_request: Updat
     adv = await get_item_by_id(session, Adv, adv_id)
     for field, value in adv_json.items():
         setattr(adv, field, value)
-    await crud_new.add_item(session, adv)
+    await crud.add_item(session, adv)
     return adv.id_dict
 
 
 @app.delete("/api/v1/advertisement/{advertisement_id}", response_model=DeleteAdvResponse, tags=['advertisements'])
 async def delete_adv(session: SessionDependency, adv_id: int):
     adv = await get_item_by_id(session, Adv, adv_id)
-    await crud_new.delete_item(session, adv)
+    await crud.delete_item(session, adv)
     return STATUS_DELETED

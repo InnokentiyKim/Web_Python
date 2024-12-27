@@ -1,4 +1,4 @@
-from models_new import Session
+from models import Session
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 from fastapi import Depends

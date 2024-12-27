@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncAttrs,create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import String, Integer, DECIMAL, DateTime, func, ForeignKey
-from config_new import DSN
+from config import DSN
 from datetime import datetime
 from typing import List
 
@@ -61,3 +61,12 @@ class Adv(Base):
 
 ORM_OBJ = Adv | User
 ORM_CLS = type[Adv] | type[User]
+
+
+async def init_orm():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+
+async def close_orm():
+    await engine.dispose()
