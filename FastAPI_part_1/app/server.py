@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from http.client import HTTPException
+from fastapi import FastAPI, Query
 from typing import Optional
 from datetime import datetime
 import crud
@@ -9,7 +10,8 @@ from dependency import SessionDependency
 from models import User, Adv
 from schema import (GetAdvResponse, CreateAdvRequest, CreateAdvResponse, UpdateAdvRequest,
                     UpdateAdvResponse, DeleteAdvResponse, GetUserResponse, CreateUserRequest,
-                    CreateUserResponse, UpdateUserRequest, UpdateUserResponse, DeleteUserResponse)
+                    CreateUserResponse, UpdateUserRequest, UpdateUserResponse, DeleteUserResponse,
+                    GetAdvSchema)
 
 
 app = FastAPI(
@@ -55,13 +57,16 @@ async def get_adv(session: SessionDependency, advertisement_id: int):
     return adv.dict
 
 
-@app.get("/api/v1/advertisement", response_model=GetAdvResponse, tags=["advertisement"])
+@app.get("/api/v1/advertisement", response_model=list[GetAdvResponse], tags=["advertisement"])
 async def get_adv_by_params(
         session: SessionDependency, title: Optional[str] = None, description: Optional[str] = None,
-        price: Optional[float] = None, author: Optional[int] = None, created_at: Optional[datetime] = None
+        price: Optional[float] = Query(default=None, ge=0), author: Optional[int] = None,
+        created_at: Optional[datetime] = None
 ):
-    adv = await crud.get_item_by_id(session, Adv, advertisement_id)
-    return adv.dict
+    params = GetAdvSchema(title=title, description=description, price=price,
+                          author=author, created_at=created_at).model_dump(exclude_unset=True, exclude_none=True)
+    advs = await crud.get_adv_by_params(session, params)
+    return [adv.dict for adv in advs]
 
 
 @app.post("/api/v1/advertisement", response_model=CreateAdvResponse, tags=["advertisement"])

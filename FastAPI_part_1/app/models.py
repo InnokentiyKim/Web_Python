@@ -45,7 +45,7 @@ class Adv(Base):
     price: Mapped[float] = mapped_column(DECIMAL, nullable=False)
     author: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete='CASCADE'))
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
-    user: Mapped["User"] = relationship("User", lazy='joined', back_populates='advs')
+    user: Mapped["User"] = relationship("User", back_populates='advs')
 
     __table_args__ = (
         CheckConstraint('price >= 0'),

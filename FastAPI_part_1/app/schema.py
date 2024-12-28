@@ -38,6 +38,14 @@ class DeleteUserResponse(StatusResponse):
     pass
 
 
+class GetAdvSchema(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    price: float | None = None
+    author: int | None = None
+    created_at: datetime | None = None
+
+
 class GetAdvResponse(BaseModel):
     id: int
     title: str
