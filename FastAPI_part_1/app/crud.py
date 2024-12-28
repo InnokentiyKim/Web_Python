@@ -19,6 +19,10 @@ async def get_item_by_id(session: AsyncSession, orm_cls: ORM_CLS, item_id: int) 
     return orm_obj
 
 
+async def get_item_by_params(session: AsyncSession, orm_cls: ORM_CLS, params: dict) -> ORM_OBJ:
+
+
+
 async def delete_item(session: AsyncSession, item: ORM_OBJ):
     await session.delete(item)
     await session.commit()

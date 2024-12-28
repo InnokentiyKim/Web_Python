@@ -44,7 +44,7 @@ class GetAdvResponse(BaseModel):
     description: str
     price: float
     author: int
-    created_at: datetime
+    created_at: str
 
 
 class CreateAdvRequest(BaseModel):

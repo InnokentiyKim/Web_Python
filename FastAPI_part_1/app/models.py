@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncAttrs,create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import String, Integer, DECIMAL, DateTime, func, ForeignKey
+from sqlalchemy import String, Integer, DECIMAL, DateTime, func, ForeignKey, CheckConstraint
 from config import DSN
 from datetime import datetime
 from typing import List
@@ -40,12 +40,16 @@ class Adv(Base):
     __tablename__ = 'adv'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    title: Mapped[str] = mapped_column(String(80), nullable=False, Index=True)
+    title: Mapped[str] = mapped_column(String(80), index=True, nullable=False)
     description: Mapped[str] = mapped_column(String(255), nullable=False)
     price: Mapped[float] = mapped_column(DECIMAL, nullable=False)
     author: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete='CASCADE'))
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     user: Mapped["User"] = relationship("User", lazy='joined', back_populates='advs')
+
+    __table_args__ = (
+        CheckConstraint('price >= 0'),
+    )
 
     @property
     def dict(self):
