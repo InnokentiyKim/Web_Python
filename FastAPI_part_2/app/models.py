@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncAttrs,create_async_engine, async_session
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import String, Integer, DECIMAL, DateTime, UUID, func, ForeignKey, CheckConstraint
 from config import DSN
+from custom_types import Role
 from datetime import datetime
 from typing import List
 
@@ -27,6 +28,7 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(60), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(60), nullable=False)
     registered_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    role: Mapped[Role] = mapped_column(String, default="user")
     advs: Mapped[List["Adv"]] = relationship("Adv", lazy="joined", back_populates="user")
     tokens: Mapped[List["Token"]] = relationship("Token", lazy="joined", back_populates="user")
 
