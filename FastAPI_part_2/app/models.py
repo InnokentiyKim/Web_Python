@@ -1,6 +1,8 @@
+import uuid
+
 from sqlalchemy.ext.asyncio import AsyncAttrs,create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import String, Integer, DECIMAL, DateTime, func, ForeignKey, CheckConstraint
+from sqlalchemy import String, Integer, DECIMAL, DateTime, UUID, func, ForeignKey, CheckConstraint
 from config import DSN
 from datetime import datetime
 from typing import List
@@ -19,13 +21,14 @@ class Base(AsyncAttrs, DeclarativeBase):
 
 
 class User(Base):
-    __tablename__ = 'user'
+    __tablename__ = 'adv_user'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(60), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(60), nullable=False)
     registered_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
-    advs: Mapped[List["Adv"]] = relationship("Adv", lazy='joined', back_populates="user")
+    advs: Mapped[List["Adv"]] = relationship("Adv", lazy="joined", back_populates="user")
+    tokens: Mapped[List["Token"]] = relationship("Token", lazy="joined", back_populates="user")
 
     @property
     def dict(self):
@@ -43,7 +46,7 @@ class Adv(Base):
     title: Mapped[str] = mapped_column(String(80), index=True, nullable=False)
     description: Mapped[str] = mapped_column(String(255), nullable=False)
     price: Mapped[float] = mapped_column(DECIMAL, nullable=False)
-    author: Mapped[int] = mapped_column(ForeignKey("user.id", ondelete='CASCADE'))
+    author: Mapped[int] = mapped_column(ForeignKey("adv_user.id", ondelete='CASCADE'))
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     user: Mapped["User"] = relationship("User", back_populates='advs')
 
@@ -63,8 +66,21 @@ class Adv(Base):
         }
 
 
-ORM_OBJ = Adv | User
-ORM_CLS = type[Adv] | type[User]
+class Token(Base):
+    __tablename__ = 'token'
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    token: Mapped[uuid.UUID] = mapped_column(UUID, unique=True, server_default=func.gen_random_uuid())
+    created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    user_id: Mapped[int] = mapped_column(ForeignKey("adv_user.id", ondelete='CASCADE'))
+    user: Mapped[User] = relationship("User", lazy="joined", back_populates="tokens")
+
+    @property
+    def dict(self):
+        return {"token": self.token}
+
+
+ORM_OBJ = Adv | User | Token
+ORM_CLS = type[Adv] | type[User] | type[Token]
 
 
 async def init_orm():

@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from pydantic import BaseModel
 from typing import Literal
@@ -16,9 +17,13 @@ class GetUserResponse(BaseModel):
     registered_at: datetime
 
 
-class CreateUserRequest(BaseModel):
+class BaseUserRequest(BaseModel):
     name: str
     password: str
+
+
+class CreateUserRequest(BaseUserRequest):
+    pass
 
 
 class CreateUserResponse(IdResponseBase):
@@ -78,3 +83,11 @@ class UpdateAdvResponse(IdResponseBase):
 
 class DeleteAdvResponse(StatusResponse):
     pass
+
+
+class LoginRequest(BaseUserRequest):
+    pass
+
+
+class LoginResponse(BaseModel):
+    token: uuid.UUID

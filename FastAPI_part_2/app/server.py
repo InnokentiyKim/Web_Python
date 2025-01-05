@@ -2,16 +2,19 @@ from http.client import HTTPException
 from fastapi import FastAPI, Query
 from typing import Optional
 from datetime import datetime
+
+from sqlalchemy import select
+import auth
 import crud
 from constants import STATUS_DELETED
 from crud import add_item, get_item_by_id
 from lifespan import lifespan
 from dependency import SessionDependency
-from models import User, Adv
+from models import User, Adv, Token
 from schema import (GetAdvResponse, CreateAdvRequest, CreateAdvResponse, UpdateAdvRequest,
                     UpdateAdvResponse, DeleteAdvResponse, GetUserResponse, CreateUserRequest,
                     CreateUserResponse, UpdateUserRequest, UpdateUserResponse, DeleteUserResponse,
-                    GetAdvSchema)
+                    GetAdvSchema, LoginResponse, LoginRequest)
 
 
 app = FastAPI(
@@ -49,6 +52,19 @@ async def delete_user(session: SessionDependency, user_id: int):
     user = await get_item_by_id(session, User, user_id)
     await crud.delete_item(session, user)
     return STATUS_DELETED
+
+
+@app.post("/api/v1/login", response_model=LoginResponse, tags=["user"])
+async def login(session: SessionDependency, login_request: LoginRequest):
+    user_query = select(User).where(User.name == login_request.name)
+    user = await session.scalar(user_query)
+    if user is None:
+        raise HTTPException(401, "Username or password is incorrect")
+    if not auth.check_password(login_request.password, user.password):
+        raise HTTPException(401, "Username or password is incorrect")
+    token = Token(user_id=user.id)
+    await crud.add_item(session, token)
+    return token.dict
 
 
 @app.get("/api/v1/advertisement/{advertisement_id}", response_model=GetAdvResponse, tags=["advertisement"])
