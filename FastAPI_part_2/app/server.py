@@ -1,15 +1,14 @@
+import auth
+import crud
 from http.client import HTTPException
 from fastapi import FastAPI, Query
 from typing import Optional
 from datetime import datetime
-
 from sqlalchemy import select
-import auth
-import crud
 from constants import STATUS_DELETED
 from crud import add_item, get_item_by_id
 from lifespan import lifespan
-from dependency import SessionDependency
+from dependency import SessionDependency, TokenDependency
 from models import User, Adv, Token
 from schema import (GetAdvResponse, CreateAdvRequest, CreateAdvResponse, UpdateAdvRequest,
                     UpdateAdvResponse, DeleteAdvResponse, GetUserResponse, CreateUserRequest,
@@ -38,9 +37,11 @@ async def create_user(session: SessionDependency, user_request: CreateUserReques
 
 
 @app.patch("/api/v1/user/{user_id}", response_model=UpdateUserResponse, tags=["user"])
-async def update_user(session: SessionDependency, user_request: UpdateUserRequest, user_id: int):
+async def update_user(session: SessionDependency, user_request: UpdateUserRequest, user_id: int, token: TokenDependency):
     user_json = user_request.model_dump(exclude_unset=True)
     user = await get_item_by_id(session, User, user_id)
+    if token.user_id != user.id and token.user.role != 'admin':
+        raise HTTPException(403, "Access denied")
     for field, value in user_json.items():
         setattr(user, field, value)
     await add_item(session, user)
@@ -48,8 +49,10 @@ async def update_user(session: SessionDependency, user_request: UpdateUserReques
 
 
 @app.delete("/api/v1/user/{user_id}", response_model=DeleteUserResponse, tags=["user"])
-async def delete_user(session: SessionDependency, user_id: int):
+async def delete_user(session: SessionDependency, user_id: int, token: TokenDependency):
     user = await get_item_by_id(session, User, user_id)
+    if token.user_id != user.id and token.user.role != 'admin':
+        raise HTTPException(403, "Access denied")
     await crud.delete_item(session, user)
     return STATUS_DELETED
 
@@ -86,17 +89,21 @@ async def get_adv_by_params(
 
 
 @app.post("/api/v1/advertisement", response_model=CreateAdvResponse, tags=["advertisement"])
-async def create_adv(session: SessionDependency, adv_request: CreateAdvRequest):
+async def create_adv(session: SessionDependency, adv_request: CreateAdvRequest, token: TokenDependency):
     adv = Adv(title=adv_request.title, description=adv_request.description,
               price=adv_request.price, author=adv_request.author)
+    if token.user.role != 'user'or token.user.role != 'admin':
+        raise HTTPException(403, "Access denied")
     await add_item(session, adv)
     return adv.id_dict
 
 
 @app.patch("/api/v1/advertisement/{advertisement_id}", response_model=UpdateAdvResponse, tags=["advertisement"])
-async def update_adv(session: SessionDependency, advertisement_id: int, adv_request: UpdateAdvRequest):
+async def update_adv(session: SessionDependency, advertisement_id: int, adv_request: UpdateAdvRequest, token: TokenDependency):
     adv_json = adv_request.model_dump(exclude_unset=True)
     adv = await get_item_by_id(session, Adv, advertisement_id)
+    if adv.user_id != token.user_id and token.user.role != 'admin':
+        raise HTTPException(403, "Access denied")
     for field, value in adv_json.items():
         setattr(adv, field, value)
     await crud.add_item(session, adv)
@@ -104,7 +111,9 @@ async def update_adv(session: SessionDependency, advertisement_id: int, adv_requ
 
 
 @app.delete("/api/v1/advertisement/{advertisement_id}", response_model=DeleteAdvResponse, tags=["advertisement"])
-async def delete_adv(session: SessionDependency, advertisement_id: int):
+async def delete_adv(session: SessionDependency, advertisement_id: int, token: TokenDependency):
     adv = await get_item_by_id(session, Adv, advertisement_id)
+    if adv.user_id != token.user_id and token.user.role != 'admin':
+        raise HTTPException(403, "Access denied")
     await crud.delete_item(session, adv)
     return STATUS_DELETED
